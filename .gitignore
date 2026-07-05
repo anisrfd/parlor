@@ -7,6 +7,17 @@ dist/
 wheels/
 *.egg-info
 
+# Node
+node_modules/
+
+# Playwright
+test-results/
+playwright-report/
+/node-service/playwright/.cache/
+
+# Secrets
+.env
+
 
 # Models (too large for git)
 *.onnx

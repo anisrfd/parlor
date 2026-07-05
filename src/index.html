@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Parlor</title>
+<title>পার্লার — বাংলা ভয়েস এআই</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <style>
   :root {
     --c-bg: #050509;
@@ -30,7 +30,7 @@
     --glow: var(--c-loading);
     --glow-dim: var(--c-loading-dim);
 
-    --font-body: 'Instrument Sans', system-ui, sans-serif;
+    --font-body: 'Hind Siliguri', system-ui, sans-serif;
     --font-display: 'Syne', system-ui, sans-serif;
   }
 
@@ -93,17 +93,11 @@
   .logo h1 {
     font-family: var(--font-body);
     font-size: 20px;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--c-text-bright);
     letter-spacing: 0.01em;
   }
 
-  .model-label {
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--c-text-dim);
-    letter-spacing: 0.03em;
-  }
 
   .on-device-pill {
     font-size: 10px;
@@ -117,8 +111,8 @@
   }
 
   .on-device-pill svg {
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
   }
 
   .status-pill {
@@ -131,8 +125,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    letter-spacing: 0.02em;
     transition: color 0.3s, background 0.3s;
   }
 
@@ -294,8 +287,8 @@
   .msg {
     padding: 10px 14px;
     border-radius: 12px;
-    font-size: 13.5px;
-    line-height: 1.55;
+    font-size: 14.5px;
+    line-height: 1.6;
     max-width: 85%;
     animation: msg-in 0.25s ease-out;
   }
@@ -319,26 +312,36 @@
     border-bottom-left-radius: 4px;
   }
 
+  .msg.system {
+    align-self: center;
+    background: rgba(248,113,113,0.08);
+    color: #f0a9a9;
+    font-size: 13px;
+    text-align: center;
+    max-width: 95%;
+  }
+
   .msg .meta {
     font-size: 10.5px;
     color: var(--c-text-dim);
     margin-top: 5px;
-    font-variant-numeric: tabular-nums;
     letter-spacing: 0.02em;
   }
+
+  .msg.interim { opacity: 0.55; font-style: italic; }
 
   .loading-dots {
     display: inline-flex;
     gap: 4px;
     align-items: center;
-    height: 1.55em;
+    height: 1.6em;
   }
 
   .loading-dots span {
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: rgba(74,222,128,0.5);
+    background: rgba(129,140,248,0.6);
     animation: dot-bounce 1.2s ease-in-out infinite;
   }
 
@@ -364,7 +367,7 @@
 
   .ctrl-btn {
     font-family: var(--font-body);
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
     padding: 8px 16px;
     border: 1px solid rgba(255,255,255,0.06);
@@ -387,7 +390,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 12.5px;
+    font-size: 13.5px;
     font-weight: 500;
     color: var(--c-text-dim);
     transition: color 0.3s;
@@ -418,10 +421,9 @@
 <header>
   <div class="logo">
     <div class="logo-mark"></div>
-    <h1>Parlor</h1>
+    <h1>পার্লার</h1>
   </div>
-  <span class="model-label">Gemma 4 E2B</span>
-  <div id="status" class="status-pill disconnected">Disconnected</div>
+  <div id="status" class="status-pill disconnected">সংযোগ বিচ্ছিন্ন</div>
 </header>
 
 <div class="portal-stack">
@@ -441,20 +443,18 @@
 
   <!-- Controls -->
   <div class="controls">
-    <button id="cameraToggle" class="ctrl-btn active">Camera On</button>
+    <button id="cameraToggle" class="ctrl-btn active">ক্যামেরা চালু</button>
     <div class="state-indicator">
       <div id="stateDot" class="dot loading"></div>
-      <span id="stateText">Loading...</span>
+      <span id="stateText">লোড হচ্ছে…</span>
     </div>
     <span class="on-device-pill">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="12" height="9" rx="2"/><path d="M5 4V3a3 3 0 0 1 6 0v1"/></svg>
-      On-device
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5.5 15a3.5 3.5 0 0 1 0-7 4.5 4.5 0 0 1 8.7-1.2A3.5 3.5 0 0 1 14.5 15z"/></svg>
+      ক্লাউড
     </span>
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0/dist/ort.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@ricky0123/vad-web@0.0.29/dist/bundle.min.js"></script>
 <script>
 const $ = id => document.getElementById(id);
 const video = $('video'), cameraToggle = $('cameraToggle');
@@ -464,20 +464,47 @@ const viewportWrap = $('viewportWrap');
 const waveformCanvas = $('waveform');
 const waveformCtx = waveformCanvas.getContext('2d');
 
-let ws, mediaStream, myvad;
+// Bengali (Bangla) digit rendering for numeric labels.
+const BN_DIGITS = '০১২৩৪৫৬৭৮৯';
+const bn = s => String(s).replace(/[0-9]/g, d => BN_DIGITS[d]);
+
+// Bengali UI copy in one place.
+const T = {
+  connected: 'সংযুক্ত',
+  disconnected: 'সংযোগ বিচ্ছিন্ন',
+  processing: 'প্রসেসিং',
+  loading: 'লোড হচ্ছে…',
+  listening: 'শুনছি',
+  thinking: 'ভাবছি…',
+  speaking: 'বলছি',
+  cameraOn: 'ক্যামেরা চালু',
+  cameraOff: 'ক্যামেরা বন্ধ',
+  withCamera: 'ক্যামেরাসহ',
+  ai: 'এআই',
+  voice: 'কণ্ঠ',
+  sec: 'সে',
+  noSpeechApi: 'দুঃখিত, এই ব্রাউজারে ভয়েস শনাক্তকরণ সমর্থিত নয়। অনুগ্রহ করে Google Chrome ব্যবহার করুন।',
+  micDenied: 'মাইক্রোফোনের অনুমতি পাওয়া যায়নি। ব্রাউজারের অনুমতি দিয়ে পেজটি রিফ্রেশ করুন।',
+  cameraFailed: 'ক্যামেরা চালু করা গেল না, তবে আপনি শুধু কথা বলেও চালিয়ে যেতে পারেন।',
+};
+
+let ws, mediaStream;
 let cameraEnabled = true;
-let audioCtx, currentSource;
+let audioCtx;
 let state = 'loading';
 let ignoreIncomingAudio = false;
 
 // Streaming audio playback state
-let streamSampleRate = 24000;
 let streamNextTime = 0;         // When to schedule next chunk
 let streamSources = [];         // Active AudioBufferSourceNodes
-let streamTtsTime = null;
+let playbackGen = 0;            // Incremented on stop; stale decodes are discarded
+let playChain = Promise.resolve(); // Serializes async MP3 decodes to keep order
+
+// Speech recognition (Bengali ASR in the browser)
+let recognition, shouldListen = false;
 
 // ── Waveform Visualizer ──
-let analyser, micSource;
+let analyser;
 const BAR_COUNT = 40;
 const BAR_GAP = 3;
 let waveformRAF;
@@ -505,8 +532,9 @@ function drawWaveform() {
   const color = getStateColor();
   waveformCtx.fillStyle = color;
 
+  // Only the assistant playback feeds real amplitude data (during 'speaking').
   let dataArray = null;
-  if (analyser) {
+  if (analyser && state === 'speaking') {
     dataArray = new Uint8Array(analyser.frequencyBinCount);
     analyser.getByteFrequencyData(dataArray);
   }
@@ -514,7 +542,6 @@ function drawWaveform() {
   for (let i = 0; i < BAR_COUNT; i++) {
     let amplitude;
     if (dataArray) {
-      // Map bar index to frequency bin
       const binIndex = Math.floor((i / BAR_COUNT) * dataArray.length * 0.6);
       amplitude = dataArray[binIndex] / 255;
     }
@@ -549,7 +576,6 @@ function updateSpeakingGlow() {
   let sum = 0;
   for (let i = 0; i < data.length; i++) sum += data[i];
   const avg = sum / data.length / 255;
-  // Modulate the glow layers based on audio amplitude
   const intensity = 0.3 + avg * 0.7;
   viewportWrap.style.setProperty('--speak-intensity', intensity);
   const spread = 20 + avg * 60;
@@ -565,21 +591,17 @@ function updateSpeakingGlow() {
 function setState(newState) {
   state = newState;
 
-  // Update state indicator
   stateDot.className = `dot ${newState}`;
-  const labels = { loading: 'Loading...', listening: 'Listening', processing: 'Thinking...', speaking: 'Speaking' };
+  const labels = { loading: T.loading, listening: T.listening, processing: T.thinking, speaking: T.speaking };
   stateText.textContent = labels[newState] || newState;
 
-  // Update viewport glow class
   viewportWrap.className = `viewport-wrap ${newState}`;
 
-  // Reset inline styles from speaking glow
   if (newState !== 'speaking') {
     viewportWrap.style.boxShadow = '';
     viewportWrap.querySelector('.viewport-glow').style.boxShadow = '';
   }
 
-  // Update CSS custom properties for state color (must use resolved values, not nested var())
   const stateVars = {
     listening: ['#4ade80', 'rgba(74,222,128,0.12)'],
     processing: ['#f59e0b', 'rgba(245,158,11,0.12)'],
@@ -590,51 +612,26 @@ function setState(newState) {
   document.documentElement.style.setProperty('--glow', glow);
   document.documentElement.style.setProperty('--glow-dim', glowDim);
 
-  // Kick off speaking glow animation
   if (newState === 'speaking') requestAnimationFrame(updateSpeakingGlow);
-
-  // Raise VAD threshold during speaking to reduce echo false triggers
-  if (myvad) {
-    myvad.setOptions({ positiveSpeechThreshold: newState === 'speaking' ? 0.92 : 0.5 });
-  }
-
-  // Connect/disconnect mic analyser based on state
-  if (newState === 'listening' && mediaStream && audioCtx && analyser) {
-    if (!micSource) {
-      micSource = audioCtx.createMediaStreamSource(mediaStream);
-    }
-    try { micSource.connect(analyser); } catch {}
-  } else if (micSource && newState !== 'listening') {
-    try { micSource.disconnect(analyser); } catch {}
-  }
 }
 
 // ── WebSocket ──
 function connect() {
   ws = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws`);
   ws.onopen = () => {
-    setStatus('connected', 'Connected');
+    setStatus('connected', T.connected);
     if (state !== 'loading') setState('listening');
   };
   ws.onclose = () => {
-    setStatus('disconnected', 'Disconnected');
+    setStatus('disconnected', T.disconnected);
     setTimeout(connect, 2000);
   };
   ws.onmessage = ({ data }) => {
     const msg = JSON.parse(data);
     if (msg.type === 'text') {
-      if (msg.transcription) {
-        const userMsgs = messagesDiv.querySelectorAll('.msg.user');
-        const lastUserMsg = userMsgs[userMsgs.length - 1];
-        if (lastUserMsg) {
-          const meta = lastUserMsg.querySelector('.meta');
-          lastUserMsg.innerHTML = `${msg.transcription}${meta ? meta.outerHTML : ''}`;
-        }
-      }
-      addMessage('assistant', msg.text, `LLM ${msg.llm_time}s`);
+      addMessage('assistant', escapeHtml(msg.text), `${T.ai} ${bn(msg.llm_time)} ${T.sec}`);
     } else if (msg.type === 'audio_start') {
       if (ignoreIncomingAudio) return;
-      streamSampleRate = msg.sample_rate || 24000;
       startStreamPlayback();
     } else if (msg.type === 'audio_chunk') {
       if (ignoreIncomingAudio) return;
@@ -646,9 +643,8 @@ function connect() {
         setState('listening');
         return;
       }
-      streamTtsTime = msg.tts_time;
       const meta = messagesDiv.querySelector('.msg.assistant:last-child .meta');
-      if (meta) meta.textContent += ` · TTS ${msg.tts_time}s`;
+      if (meta) meta.textContent += ` · ${T.voice} ${bn(msg.tts_time)} ${T.sec}`;
     }
   };
 }
@@ -660,20 +656,15 @@ async function startCamera() {
   try {
     mediaStream = await navigator.mediaDevices.getUserMedia({
       video: { width: 640, height: 480, facingMode: 'user' },
-      audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
     });
     video.srcObject = mediaStream;
-    return;
-  } catch (e) { console.warn('Video+audio failed:', e.message); }
-
-  const streams = await Promise.allSettled([
-    navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480, facingMode: 'user' } }),
-    navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } }),
-  ]);
-  mediaStream = new MediaStream();
-  streams.forEach(r => { if (r.status === 'fulfilled') r.value.getTracks().forEach(t => mediaStream.addTrack(t)); });
-  if (mediaStream.getVideoTracks().length) video.srcObject = mediaStream;
-  if (!mediaStream.getAudioTracks().length) { cameraEnabled = false; }
+  } catch (e) {
+    console.warn('Camera failed:', e.message);
+    cameraEnabled = false;
+    cameraToggle.classList.remove('active');
+    cameraToggle.textContent = T.cameraOff;
+    addMessage('system', T.cameraFailed);
+  }
 }
 
 function captureFrame() {
@@ -685,71 +676,86 @@ function captureFrame() {
   return canvas.toDataURL('image/jpeg', 0.7).split(',')[1];
 }
 
-// ── VAD Handlers ──
+// ── Bengali Speech Recognition (browser Web Speech API) ──
 let speakingStartedAt = 0;
-const BARGE_IN_GRACE_MS = 800; // Ignore VAD triggers shortly after TTS starts (echo)
+const BARGE_IN_GRACE_MS = 900; // Ignore recognizer triggers just after TTS starts (echo)
 
-function handleSpeechStart() {
-  if (state === 'speaking') {
-    // Ignore echo: don't allow barge-in right after TTS starts playing
-    if (Date.now() - speakingStartedAt < BARGE_IN_GRACE_MS) {
-      console.log('Barge-in suppressed (echo grace period)');
-      return;
+function initASR() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    addMessage('system', T.noSpeechApi);
+    setState('listening'); // keep UI alive even without ASR
+    return;
+  }
+
+  recognition = new SR();
+  recognition.lang = 'bn-BD';
+  recognition.continuous = true;
+  recognition.interimResults = true;
+
+  recognition.onresult = onASRResult;
+  recognition.onerror = (e) => {
+    if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
+      addMessage('system', T.micDenied);
+      shouldListen = false;
     }
-    stopPlayback();
-    ignoreIncomingAudio = true;
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify({ type: 'interrupt' }));
-    }
-    setState('listening');
-    console.log('Barge-in: interrupted playback');
+    // 'no-speech' / 'aborted' are normal; onend will restart.
+  };
+  recognition.onend = () => { if (shouldListen) safeStartASR(); };
+
+  shouldListen = true;
+  safeStartASR();
+}
+
+function safeStartASR() {
+  try { recognition.start(); } catch (_) { /* already started */ }
+}
+
+function onASRResult(e) {
+  let interim = '', finalText = '';
+  for (let i = e.resultIndex; i < e.results.length; i++) {
+    const r = e.results[i];
+    if (r.isFinal) finalText += r[0].transcript;
+    else interim += r[0].transcript;
+  }
+
+  // Barge-in: any detected speech while the assistant is talking (past grace) stops it.
+  if ((interim || finalText).trim() && state === 'speaking' &&
+      Date.now() - speakingStartedAt > BARGE_IN_GRACE_MS) {
+    bargeIn();
+  }
+
+  if (finalText.trim() && state === 'listening') {
+    submitTurn(finalText.trim());
   }
 }
 
-function handleSpeechEnd(audio) {
-  if (state !== 'listening') return;
+function bargeIn() {
+  stopPlayback();
+  ignoreIncomingAudio = true;
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ type: 'interrupt' }));
+  }
+  setState('listening');
+  console.log('Barge-in: interrupted playback');
+}
+
+function submitTurn(text) {
   if (!ws || ws.readyState !== WebSocket.OPEN) return;
 
-  const wavBase64 = float32ToWavBase64(audio);
   const imageBase64 = captureFrame();
+  addMessage('user', escapeHtml(text), imageBase64 ? T.withCamera : '');
+  addThinking();
 
   setState('processing');
-  setStatus('processing', 'Processing');
-  addMessage('user', '<span class="loading-dots"><span></span><span></span><span></span></span>', imageBase64 ? 'with camera' : '');
+  setStatus('processing', T.processing);
 
-  const payload = { audio: wavBase64 };
+  const payload = { text };
   if (imageBase64) payload.image = imageBase64;
   ws.send(JSON.stringify(payload));
 }
 
-// ── Float32 @ 16kHz → WAV base64 ──
-function float32ToWavBase64(samples) {
-  const buf = new ArrayBuffer(44 + samples.length * 2);
-  const v = new DataView(buf);
-  const w = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
-  w(0,'RIFF'); v.setUint32(4, 36 + samples.length * 2, true); w(8,'WAVE'); w(12,'fmt ');
-  v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
-  v.setUint32(24, 16000, true); v.setUint32(28, 32000, true); v.setUint16(32, 2, true);
-  v.setUint16(34, 16, true); w(36,'data'); v.setUint32(40, samples.length * 2, true);
-  for (let i = 0; i < samples.length; i++) {
-    const s = Math.max(-1, Math.min(1, samples[i]));
-    v.setInt16(44 + i * 2, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
-  }
-  const bytes = new Uint8Array(buf);
-  let bin = ''; for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
-  return btoa(bin);
-}
-
-// ── Streaming Playback ──
-function stopPlayback() {
-  for (const src of streamSources) {
-    try { src.stop(); } catch {}
-  }
-  streamSources = [];
-  currentSource = null;
-  streamNextTime = 0;
-}
-
+// ── Streaming Playback (MP3 chunks decoded by the browser) ──
 function ensureAudioCtx() {
   if (!audioCtx) {
     audioCtx = new AudioContext();
@@ -759,69 +765,102 @@ function ensureAudioCtx() {
   }
 }
 
+function stopPlayback() {
+  playbackGen++; // invalidate any in-flight decodes
+  for (const src of streamSources) {
+    try { src.stop(); } catch {}
+  }
+  streamSources = [];
+  streamNextTime = 0;
+  playChain = Promise.resolve();
+}
+
 function startStreamPlayback() {
   stopPlayback();
   ensureAudioCtx();
   if (audioCtx.state === 'suspended') audioCtx.resume();
-  streamNextTime = audioCtx.currentTime + 0.05; // Small initial buffer
+  streamNextTime = audioCtx.currentTime + 0.05;
   speakingStartedAt = Date.now();
+  removeThinking();
   setState('speaking');
 }
 
-function queueAudioChunk(base64Pcm) {
+function queueAudioChunk(base64Mp3) {
   ensureAudioCtx();
+  const gen = playbackGen;
 
-  // Decode base64 -> Int16 PCM -> Float32
-  const bin = atob(base64Pcm);
+  const bin = atob(base64Mp3);
   const bytes = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-  const int16 = new Int16Array(bytes.buffer);
-  const float32 = new Float32Array(int16.length);
-  for (let i = 0; i < int16.length; i++) float32[i] = int16[i] / 32768;
 
-  // Create AudioBuffer and schedule it
-  const audioBuffer = audioCtx.createBuffer(1, float32.length, streamSampleRate);
-  audioBuffer.getChannelData(0).set(float32);
-
-  const source = audioCtx.createBufferSource();
-  source.buffer = audioBuffer;
-  source.connect(audioCtx.destination);
-  source.connect(analyser);
-
-  // Schedule gapless playback
-  const startAt = Math.max(streamNextTime, audioCtx.currentTime);
-  source.start(startAt);
-  streamNextTime = startAt + audioBuffer.duration;
-
-  streamSources.push(source);
-  currentSource = source;
-
-  // Clean up when this chunk finishes
-  source.onended = () => {
-    const idx = streamSources.indexOf(source);
-    if (idx !== -1) streamSources.splice(idx, 1);
-    // If this was the last chunk and no more are queued, return to listening
-    if (streamSources.length === 0 && state === 'speaking') {
-      currentSource = null;
-      setState('listening');
-      setStatus('connected', 'Connected');
+  // Decode + schedule strictly in arrival order (decodeAudioData is async).
+  playChain = playChain.then(async () => {
+    if (gen !== playbackGen) return; // superseded by stop/barge-in
+    let audioBuffer;
+    try {
+      audioBuffer = await audioCtx.decodeAudioData(bytes.buffer.slice(0));
+    } catch (err) {
+      console.warn('decode failed:', err);
+      return;
     }
-  };
+    if (gen !== playbackGen) return;
+
+    const source = audioCtx.createBufferSource();
+    source.buffer = audioBuffer;
+    source.connect(audioCtx.destination);
+    source.connect(analyser);
+
+    const startAt = Math.max(streamNextTime, audioCtx.currentTime);
+    source.start(startAt);
+    streamNextTime = startAt + audioBuffer.duration;
+    streamSources.push(source);
+
+    source.onended = () => {
+      const idx = streamSources.indexOf(source);
+      if (idx !== -1) streamSources.splice(idx, 1);
+      if (streamSources.length === 0 && state === 'speaking') {
+        setState('listening');
+        setStatus('connected', T.connected);
+      }
+    };
+  });
 }
 
 // ── UI ──
-function addMessage(role, text, meta) {
+function escapeHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function addMessage(role, html, meta) {
+  if (role === 'assistant') removeThinking(); // reply replaces the thinking bubble
   const div = document.createElement('div');
   div.className = `msg ${role}`;
-  div.innerHTML = `${text}${meta ? `<div class="meta">${meta}</div>` : ''}`;
+  div.innerHTML = `${html}${meta ? `<div class="meta">${meta}</div>` : ''}`;
   messagesDiv.appendChild(div);
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+function addThinking() {
+  removeThinking();
+  const div = document.createElement('div');
+  div.id = 'thinkingBubble';
+  div.className = 'msg assistant';
+  div.innerHTML = '<span class="loading-dots"><span></span><span></span><span></span></span>';
+  messagesDiv.appendChild(div);
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+function removeThinking() {
+  const t = $('thinkingBubble');
+  if (t) t.remove();
 }
 
 cameraToggle.addEventListener('click', () => {
   cameraEnabled = !cameraEnabled;
   cameraToggle.classList.toggle('active', cameraEnabled);
-  cameraToggle.textContent = cameraEnabled ? 'Camera On' : 'Camera Off';
+  cameraToggle.textContent = cameraEnabled ? T.cameraOn : T.cameraOff;
   video.style.opacity = cameraEnabled ? 1 : 0.3;
 });
 
@@ -832,26 +871,9 @@ async function init() {
 
   await startCamera();
   connect();
+  initASR();
 
-  // Initialize VAD with shared mic stream
-  myvad = await vad.MicVAD.new({
-    getStream: async () => new MediaStream(mediaStream.getAudioTracks()),
-    positiveSpeechThreshold: 0.5,
-    negativeSpeechThreshold: 0.25,
-    redemptionMs: 600,
-    minSpeechMs: 300,
-    preSpeechPadMs: 300,
-    onSpeechStart: handleSpeechStart,
-    onSpeechEnd: handleSpeechEnd,
-    onVADMisfire: () => { console.log('VAD misfire (too short)'); },
-    onnxWASMBasePath: "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0/dist/",
-    baseAssetPath: "https://cdn.jsdelivr.net/npm/@ricky0123/vad-web@0.0.29/dist/",
-  });
-
-  myvad.start();
-
-  // Init audio context on first user gesture for mic visualizer
-  // (browsers require user interaction to create AudioContext)
+  // AudioContext needs a user gesture in most browsers.
   const initAudio = () => {
     ensureAudioCtx();
     if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -860,15 +882,12 @@ async function init() {
   };
   document.addEventListener('click', initAudio);
   document.addEventListener('keydown', initAudio);
-  // Also try immediately (may work if page had prior interaction)
   ensureAudioCtx();
 
   setState('listening');
-
-  // Start waveform loop
   drawWaveform();
 
-  console.log('VAD initialized and listening');
+  console.log('Parlor (Bengali) initialized');
 }
 
 init();

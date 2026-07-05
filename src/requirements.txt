@@ -1,0 +1,6 @@
+# For pip users (if you don't have uv). From src/:  pip install -r requirements.txt
+fastapi>=0.135.3
+uvicorn[standard]>=0.43.0
+websockets>=16.0
+httpx>=0.27.0
+python-dotenv>=1.0.0
