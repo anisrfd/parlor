@@ -7,7 +7,7 @@
 // A different provider (OpenRouter, a local model, …) can satisfy the same shape.
 
 import { GoogleGenAI } from '@google/genai';
-import { SYSTEM_PROMPT, NO_KEY_MESSAGE, ERROR_MESSAGE } from './prompt.js';
+import { composeUserPrompt, NO_KEY_MESSAGE, ERROR_MESSAGE } from './prompt.js';
 
 /**
  * @param {object}  opts
@@ -19,13 +19,9 @@ export function createGemmaService({ apiKey = '', model = 'gemma-4-31b-it', clie
   const genai = client || (apiKey ? new GoogleGenAI({ apiKey }) : null);
   const hasKey = Boolean(apiKey);
 
-  // Gemma has no system role, so the system prompt is prepended to the user turn.
+  // The SDK wants structured parts; the prompt text is shared with the local backends.
   function buildContents({ text, image, context }) {
-    const lead = [SYSTEM_PROMPT];
-    if (context) lead.push(context);
-    lead.push(`ব্যবহারকারী বলেছে: "${text || ''}"`);
-
-    const parts = [{ text: lead.join('\n\n') }];
+    const parts = [{ text: composeUserPrompt({ text, context }) }];
     if (image) parts.push({ inlineData: { mimeType: 'image/jpeg', data: image } });
     return [{ role: 'user', parts }];
   }

@@ -18,6 +18,21 @@ export const SYSTEM_PROMPT = `তুমি "পার্লার" — একজ
 - ব্যবহারকারী অন্য ভাষায় কথা বললেও তুমি বাংলাতেই আন্তরিকভাবে উত্তর দেবে।
 - কথাগুলো যেন উচ্চারণ করলে স্বাভাবিক শোনায় — এটা কণ্ঠে বলা হবে, তাই ইমোজি, তালিকা বা বিশেষ চিহ্ন এড়িয়ে চলবে।`;
 
+/**
+ * Compose the single user-turn text sent to any Gemma backend. Gemma has no system
+ * role, so the system prompt (and optional camera context) is prepended to the user's
+ * words. Shared by every reasoning provider — cloud and local — so the prompt shaping
+ * stays identical across backends.
+ * @param {{text?: string, context?: string}} turn
+ * @returns {string}
+ */
+export function composeUserPrompt({ text, context } = {}) {
+  const lead = [SYSTEM_PROMPT];
+  if (context) lead.push(context);
+  lead.push(`ব্যবহারকারী বলেছে: "${text || ''}"`);
+  return lead.join('\n\n');
+}
+
 // Fallback spoken when the API key is missing, so the pipeline still runs
 // end-to-end (browser hears real Bengali audio instead of a silent failure).
 export const NO_KEY_MESSAGE =

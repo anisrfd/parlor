@@ -10,15 +10,29 @@
 
 import { config } from './src/config.js';
 import { createGemmaService } from './src/gemma.js';
-import { createLocalGemmaService } from './src/localGemma.js';
+import { createOllamaService } from './src/ollama.js';
+import { createLiteRtService } from './src/litert.js';
 import { createTtsService } from './src/tts.js';
 import { createApp } from './src/app.js';
 
-// Cloud Gemma when a key is present; otherwise fall back to a local model (Ollama).
+// Local fallback engine, chosen by LOCAL_BACKEND. Unknown values fall back to Ollama.
+function createLocalReasoner(local) {
+  switch (local.backend) {
+    case 'litert':
+      return createLiteRtService(local.litert);
+    case 'ollama':
+      return createOllamaService(local.ollama);
+    default:
+      console.warn(`Unknown LOCAL_BACKEND "${local.backend}" — using ollama`);
+      return createOllamaService(local.ollama);
+  }
+}
+
+// Cloud Gemma when a key is present; otherwise a local backend (Ollama or LiteRT-LM).
 const usingCloud = Boolean(config.gemma.apiKey);
 const gemma = usingCloud
   ? createGemmaService(config.gemma)
-  : createLocalGemmaService(config.local);
+  : createLocalReasoner(config.local);
 const tts = createTtsService(config.tts);
 const app = createApp({ gemma, tts });
 

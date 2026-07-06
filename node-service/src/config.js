@@ -13,10 +13,18 @@ export function createConfig(env = process.env) {
       apiKey: env.GOOGLE_API_KEY || env.GEMINI_API_KEY || '',
       model: env.GEMMA_MODEL || 'gemma-4-31b-it',
     }),
-    // Local fallback (Ollama) — used automatically when no cloud key is set.
+    // Local fallback — used automatically when no cloud key is set. LOCAL_BACKEND
+    // picks the engine; each backend keeps its own model + host.
     local: Object.freeze({
-      model: env.LOCAL_MODEL || 'gemma3',
-      host: env.OLLAMA_HOST || 'http://localhost:11434',
+      backend: (env.LOCAL_BACKEND || 'ollama').toLowerCase(), // 'ollama' | 'litert'
+      ollama: Object.freeze({
+        model: env.OLLAMA_MODEL || env.LOCAL_MODEL || 'gemma3',
+        host: env.OLLAMA_HOST || 'http://localhost:11434',
+      }),
+      litert: Object.freeze({
+        model: env.LITERT_MODEL || 'gemma-4-e2b-it',
+        host: env.LITERT_HOST || 'http://localhost:8110',
+      }),
     }),
     tts: Object.freeze({
       voice: env.TTS_VOICE || 'bn-BD-NabanitaNeural',

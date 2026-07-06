@@ -9,10 +9,11 @@ import assert from 'node:assert/strict';
 
 import { createConfig } from '../src/config.js';
 import { createGemmaService } from '../src/gemma.js';
-import { createLocalGemmaService } from '../src/localGemma.js';
+import { createOllamaService } from '../src/ollama.js';
+import { createLiteRtService } from '../src/litert.js';
 import { createTtsService } from '../src/tts.js';
 import { createApp } from '../src/app.js';
-import { SYSTEM_PROMPT, NO_KEY_MESSAGE, ERROR_MESSAGE } from '../src/prompt.js';
+import { SYSTEM_PROMPT, NO_KEY_MESSAGE, ERROR_MESSAGE, composeUserPrompt } from '../src/prompt.js';
 
 const hasBengali = (s) => /[ঀ-৿]/.test(s); // Bengali Unicode block
 
@@ -22,13 +23,28 @@ describe('config', () => {
     assert.equal(def.gemma.model, 'gemma-4-31b-it');
     assert.equal(def.tts.voice, 'bn-BD-NabanitaNeural');
     assert.equal(def.gemma.apiKey, '');
-    assert.equal(def.local.model, 'gemma3');
-    assert.equal(def.local.host, 'http://localhost:11434');
+    assert.equal(def.local.backend, 'ollama');
+    assert.equal(def.local.ollama.model, 'gemma3');
+    assert.equal(def.local.ollama.host, 'http://localhost:11434');
+    assert.equal(def.local.litert.model, 'gemma-4-e2b-it');
+    assert.equal(def.local.litert.host, 'http://localhost:8110');
 
-    const custom = createConfig({ GOOGLE_API_KEY: 'k', GEMMA_MODEL: 'gemma-3-4b-it', TTS_VOICE: 'bn-BD-PradeepNeural' });
+    const custom = createConfig({ GOOGLE_API_KEY: 'k', GEMMA_MODEL: 'gemma-3-4b-it', TTS_VOICE: 'bn-BD-PradeepNeural', LOCAL_BACKEND: 'LiteRT' });
     assert.equal(custom.gemma.apiKey, 'k');
     assert.equal(custom.gemma.model, 'gemma-3-4b-it');
     assert.equal(custom.tts.voice, 'bn-BD-PradeepNeural');
+    assert.equal(custom.local.backend, 'litert'); // normalized to lower-case
+  });
+});
+
+describe('prompt composition', () => {
+  test('composeUserPrompt prepends system prompt + context, then the user turn', () => {
+    const p = composeUserPrompt({ text: 'কেমন আছো?', context: 'ctx-marker' });
+    assert.ok(p.startsWith(SYSTEM_PROMPT));
+    assert.match(p, /ctx-marker/);
+    assert.match(p, /কেমন আছো\?/);
+    // Context is optional and must not inject an empty block.
+    assert.ok(!composeUserPrompt({ text: 'হ্যালো' }).includes('ctx-marker'));
   });
 });
 
@@ -74,7 +90,7 @@ describe('gemma service', () => {
   });
 });
 
-describe('local gemma fallback (Ollama)', () => {
+describe('local fallback: Ollama backend', () => {
   test('forwards prompt + image to Ollama and returns the reply', async () => {
     const seen = {};
     const fakeFetch = async (url, opts) => {
@@ -83,8 +99,8 @@ describe('local gemma fallback (Ollama)', () => {
       seen.body = JSON.parse(opts.body);
       return { ok: true, json: async () => ({ response: 'আমি ভালো আছি।' }) };
     };
-    const local = createLocalGemmaService({ model: 'gemma3', fetchImpl: fakeFetch });
-    assert.match(local.modelName, /local/i);
+    const local = createOllamaService({ model: 'gemma3', fetchImpl: fakeFetch });
+    assert.match(local.modelName, /ollama/i);
     assert.equal(local.provider, 'local');
     assert.equal(local.hasKey, false); // no cloud key in local mode
     const { response, degraded } = await local.infer({ text: 'কেমন আছো?', image: 'BASE64', context: 'ctx' });
@@ -100,7 +116,39 @@ describe('local gemma fallback (Ollama)', () => {
 
   test('unreachable Ollama → Bengali degraded message, no crash', async () => {
     const fakeFetch = async () => { throw new Error('ECONNREFUSED'); };
-    const local = createLocalGemmaService({ fetchImpl: fakeFetch });
+    const local = createOllamaService({ fetchImpl: fakeFetch });
+    const { response, degraded } = await local.infer({ text: 'হ্যালো' });
+    assert.equal(degraded, true);
+    assert.ok(hasBengali(response));
+  });
+});
+
+describe('local fallback: LiteRT-LM backend', () => {
+  test('posts to the LiteRT shim and returns the reply (text or response key)', async () => {
+    const seen = {};
+    const fakeFetch = async (url, opts) => {
+      seen.url = url;
+      seen.opts = opts;
+      seen.body = JSON.parse(opts.body);
+      return { ok: true, json: async () => ({ text: 'আমি ভালো আছি।' }) };
+    };
+    const local = createLiteRtService({ model: 'gemma-4-e2b-it', host: 'http://localhost:8110', fetchImpl: fakeFetch });
+    assert.match(local.modelName, /litert/i);
+    assert.equal(local.provider, 'local');
+    assert.equal(local.hasKey, false);
+    const { response, degraded } = await local.infer({ text: 'কেমন আছো?', image: 'BASE64', context: 'ctx' });
+    assert.equal(response, 'আমি ভালো আছি।');
+    assert.equal(degraded, undefined);
+    assert.match(seen.url, /\/generate$/);
+    assert.match(seen.body.prompt, /বাংলা/);
+    assert.match(seen.body.prompt, /ctx/);
+    assert.equal(seen.body.image, 'BASE64'); // singular for the native-multimodal engine
+    assert.ok(seen.opts.signal instanceof AbortSignal);
+  });
+
+  test('unreachable LiteRT shim → Bengali degraded message, no crash', async () => {
+    const fakeFetch = async () => { throw new Error('ECONNREFUSED'); };
+    const local = createLiteRtService({ fetchImpl: fakeFetch });
     const { response, degraded } = await local.infer({ text: 'হ্যালো' });
     assert.equal(degraded, true);
     assert.ok(hasBengali(response));
