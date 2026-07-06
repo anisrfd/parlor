@@ -1,4 +1,4 @@
-# পার্লার (Parlor) — বাংলা ভয়েস + ভিশন এআই
+# Parlor(পার্লার) — Bengali Voice(বাংলা ভয়েস) + Vision AI(ভিশন এআই)
 
 Real-time, natural **Bengali** voice-and-vision conversations in the browser. Talk to
 it in Bangla, show it your camera, and it talks back in a natural Bengali voice.
