@@ -6,7 +6,7 @@ import express from 'express';
 
 /**
  * @param {object} deps
- * @param {{infer: Function, hasKey: boolean, modelName: string}} deps.gemma
+ * @param {{infer: Function, hasKey: boolean, provider: string, modelName: string}} deps.gemma
  * @param {{synthesize: Function, voiceName: string, audioMime: string}} deps.tts
  */
 export function createApp({ gemma, tts }) {
@@ -14,7 +14,13 @@ export function createApp({ gemma, tts }) {
   app.use(express.json({ limit: '12mb' })); // camera frames arrive as base64 JPEG
 
   app.get('/health', (_req, res) => {
-    res.json({ ok: true, model: gemma.modelName, voice: tts.voiceName, keyConfigured: gemma.hasKey });
+    res.json({
+      ok: true,
+      model: gemma.modelName,
+      provider: gemma.provider, // 'cloud' | 'local' — which reasoning backend is active
+      voice: tts.voiceName,
+      keyConfigured: gemma.hasKey, // whether a cloud API key is set (false in local mode)
+    });
   });
 
   // Bengali reply (with optional camera frame) from the reasoning provider.

@@ -70,5 +70,5 @@ export function createGemmaService({ apiKey = '', model = 'gemma-4-31b-it', clie
     }
   }
 
-  return { infer, hasKey, modelName: model };
+  return { infer, hasKey, provider: 'cloud', modelName: model };
 }

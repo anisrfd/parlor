@@ -85,6 +85,8 @@ describe('local gemma fallback (Ollama)', () => {
     };
     const local = createLocalGemmaService({ model: 'gemma3', fetchImpl: fakeFetch });
     assert.match(local.modelName, /local/i);
+    assert.equal(local.provider, 'local');
+    assert.equal(local.hasKey, false); // no cloud key in local mode
     const { response, degraded } = await local.infer({ text: 'কেমন আছো?', image: 'BASE64', context: 'ctx' });
     assert.equal(response, 'আমি ভালো আছি।');
     assert.equal(degraded, undefined);
@@ -108,7 +110,7 @@ describe('local gemma fallback (Ollama)', () => {
 describe('HTTP endpoints (stub providers)', () => {
   let base, server;
   const gemmaStub = {
-    modelName: 'gemma-test', hasKey: false,
+    modelName: 'gemma-test', hasKey: false, provider: 'cloud',
     infer: async ({ text }) => ({ response: `উত্তর: ${text}`, degraded: true }),
   };
   const ttsStub = {
@@ -127,6 +129,7 @@ describe('HTTP endpoints (stub providers)', () => {
     const body = await (await fetch(`${base}/health`)).json();
     assert.equal(body.ok, true);
     assert.equal(body.model, 'gemma-test');
+    assert.equal(body.provider, 'cloud');
     assert.equal(body.voice, 'bn-BD-NabanitaNeural');
     assert.equal(body.keyConfigured, false);
   });

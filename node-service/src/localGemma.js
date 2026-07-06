@@ -1,7 +1,7 @@
 // Local Gemma fallback — runs a Gemma model on the user's own machine via Ollama.
 //
 // Satisfies the same "reasoning provider" contract as gemma.js
-//   { infer({text, image, context}) -> {response, degraded?}, hasKey, modelName }
+//   { infer({text, image, context}) -> {response, degraded?}, hasKey, provider, modelName }
 // so the composition root can swap it in whenever no cloud GOOGLE_API_KEY is set. No
 // key, no network egress — everything stays on the machine.
 //
@@ -66,5 +66,7 @@ export function createLocalGemmaService({
     }
   }
 
-  return { infer, hasKey: true, modelName: `${model} (local via Ollama)` };
+  // hasKey reflects a *cloud* key, so it's false here; `provider` tells health/startup
+  // that reasoning is nonetheless available via the local backend.
+  return { infer, hasKey: false, provider: 'local', modelName: `${model} (local via Ollama)` };
 }
