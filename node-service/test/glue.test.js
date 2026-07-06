@@ -9,6 +9,7 @@ import assert from 'node:assert/strict';
 
 import { createConfig } from '../src/config.js';
 import { createGemmaService } from '../src/gemma.js';
+import { createLocalGemmaService } from '../src/localGemma.js';
 import { createTtsService } from '../src/tts.js';
 import { createApp } from '../src/app.js';
 import { SYSTEM_PROMPT, NO_KEY_MESSAGE, ERROR_MESSAGE } from '../src/prompt.js';
@@ -21,6 +22,8 @@ describe('config', () => {
     assert.equal(def.gemma.model, 'gemma-4-31b-it');
     assert.equal(def.tts.voice, 'bn-BD-NabanitaNeural');
     assert.equal(def.gemma.apiKey, '');
+    assert.equal(def.local.model, 'gemma3');
+    assert.equal(def.local.host, 'http://localhost:11434');
 
     const custom = createConfig({ GOOGLE_API_KEY: 'k', GEMMA_MODEL: 'gemma-3-4b-it', TTS_VOICE: 'bn-BD-PradeepNeural' });
     assert.equal(custom.gemma.apiKey, 'k');
@@ -68,6 +71,34 @@ describe('gemma service', () => {
     assert.match(parts[0].text, /বাংলা/);
     assert.match(parts[0].text, /ctx/);
     assert.equal(parts[1].inlineData.mimeType, 'image/jpeg');
+  });
+});
+
+describe('local gemma fallback (Ollama)', () => {
+  test('forwards prompt + image to Ollama and returns the reply', async () => {
+    const seen = {};
+    const fakeFetch = async (url, opts) => {
+      seen.url = url;
+      seen.body = JSON.parse(opts.body);
+      return { ok: true, json: async () => ({ response: 'আমি ভালো আছি।' }) };
+    };
+    const local = createLocalGemmaService({ model: 'gemma3', fetchImpl: fakeFetch });
+    assert.match(local.modelName, /local/i);
+    const { response, degraded } = await local.infer({ text: 'কেমন আছো?', image: 'BASE64', context: 'ctx' });
+    assert.equal(response, 'আমি ভালো আছি।');
+    assert.equal(degraded, undefined);
+    assert.match(seen.url, /\/api\/generate$/);
+    assert.match(seen.body.prompt, /বাংলা/);
+    assert.match(seen.body.prompt, /ctx/);
+    assert.deepEqual(seen.body.images, ['BASE64']);
+  });
+
+  test('unreachable Ollama → Bengali degraded message, no crash', async () => {
+    const fakeFetch = async () => { throw new Error('ECONNREFUSED'); };
+    const local = createLocalGemmaService({ fetchImpl: fakeFetch });
+    const { response, degraded } = await local.infer({ text: 'হ্যালো' });
+    assert.equal(degraded, true);
+    assert.ok(hasBengali(response));
   });
 });
 
