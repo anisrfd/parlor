@@ -14,13 +14,16 @@ import { SYSTEM_PROMPT, ERROR_MESSAGE } from './prompt.js';
 
 /**
  * @param {object}   opts
- * @param {string}   opts.model      Ollama model tag (e.g. 'gemma3', 'gemma3:12b')
- * @param {string}   opts.host       Ollama base URL
- * @param {Function} [opts.fetchImpl] Inject a fake fetch for tests
+ * @param {string}   opts.model       Ollama model tag (e.g. 'gemma3', 'gemma3:12b')
+ * @param {string}   opts.host        Ollama base URL
+ * @param {number}  [opts.timeoutMs]  Per-request generation timeout (local models can
+ *                                     be slow, but an unbounded fetch would hang the turn)
+ * @param {Function}[opts.fetchImpl]  Inject a fake fetch for tests
  */
 export function createLocalGemmaService({
   model = 'gemma3',
   host = 'http://localhost:11434',
+  timeoutMs = 60000,
   fetchImpl = fetch,
 } = {}) {
   const base = host.replace(/\/+$/, '');
@@ -47,6 +50,7 @@ export function createLocalGemmaService({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
+        signal: AbortSignal.timeout(timeoutMs),
       });
       if (!res.ok) {
         throw new Error(`ollama ${res.status}: ${(await res.text()).slice(0, 200)}`);
@@ -55,7 +59,8 @@ export function createLocalGemmaService({
       const reply = (data.response || '').trim();
       return reply ? { response: reply } : { response: ERROR_MESSAGE, degraded: true };
     } catch (err) {
-      // Most likely Ollama isn't running or the model hasn't been pulled.
+      // Ollama not running, model not pulled, or the timeout fired — degrade to a
+      // spoken Bengali error rather than throwing and breaking the turn.
       console.error(`[local-gemma] ${err?.message || err}`);
       return { response: ERROR_MESSAGE, degraded: true };
     }

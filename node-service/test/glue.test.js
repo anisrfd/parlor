@@ -79,6 +79,7 @@ describe('local gemma fallback (Ollama)', () => {
     const seen = {};
     const fakeFetch = async (url, opts) => {
       seen.url = url;
+      seen.opts = opts;
       seen.body = JSON.parse(opts.body);
       return { ok: true, json: async () => ({ response: 'আমি ভালো আছি।' }) };
     };
@@ -91,6 +92,8 @@ describe('local gemma fallback (Ollama)', () => {
     assert.match(seen.body.prompt, /বাংলা/);
     assert.match(seen.body.prompt, /ctx/);
     assert.deepEqual(seen.body.images, ['BASE64']);
+    // The request is bounded by a timeout so a hung local model can't stall the turn.
+    assert.ok(seen.opts.signal instanceof AbortSignal);
   });
 
   test('unreachable Ollama → Bengali degraded message, no crash', async () => {
